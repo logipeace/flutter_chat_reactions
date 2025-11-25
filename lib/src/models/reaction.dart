@@ -33,8 +33,8 @@ class Reaction {
       other is Reaction &&
           runtimeType == other.runtimeType &&
           emoji == other.emoji &&
-          userId == other.userId;
+          userName == other.userName;
 
   @override
-  int get hashCode => emoji.hashCode ^ userId.hashCode;
+  int get hashCode => emoji.hashCode ^ userName.hashCode;
 }

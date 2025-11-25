@@ -35,7 +35,8 @@ class ReactionsController extends ChangeNotifier {
   /// Checks if the current user has reacted with a specific [emoji] to a [messageId].
   bool hasUserReacted(String messageId, String emoji) {
     final reactions = getReactions(messageId);
-    return reactions.any((r) => r.emoji == emoji && r.userName == currentUserId);
+    return reactions.any((r) =>
+    r.emoji == emoji && (r.userName ?? r.userId) == currentUserId);
   }
 
   /// Adds a reaction with the given [emoji] to a [messageId].
@@ -45,8 +46,9 @@ class ReactionsController extends ChangeNotifier {
       {String? userName, bool hasRebuild = true}) {
     final reactions = _messageReactions[messageId] ?? [];
     final existingIndex = reactions.indexWhere(
-      (r) {
-        return r.emoji == emoji && r.userName == userName;
+          (r) {
+        return r.emoji == emoji &&
+            (r.userName ?? r.userId) == (userName ?? currentUserId);
       },
     );
 
@@ -67,7 +69,8 @@ class ReactionsController extends ChangeNotifier {
   /// Removes a reaction with the given [emoji] from a [messageId].
   void removeReaction(String messageId, String emoji) {
     final reactions = _messageReactions[messageId] ?? [];
-    reactions.removeWhere((r) => r.emoji == emoji && r.userId == currentUserId);
+    reactions.removeWhere((r) =>
+    r.emoji == emoji && (r.userName ?? r.userId) == currentUserId);
     _messageReactions[messageId] = reactions;
     notifyListeners();
   }
@@ -78,7 +81,7 @@ class ReactionsController extends ChangeNotifier {
   void toggleReaction(String messageId, String emoji, {String? userName}) {
     final reactions = _messageReactions[messageId] ?? [];
     final userReactionIndex =
-        reactions.indexWhere((r) => r.userId == currentUserId);
+    reactions.indexWhere((r) => (r.userName ?? r.userId) == currentUserId);
 
     if (userReactionIndex != -1) {
       final existingReaction = reactions[userReactionIndex];
