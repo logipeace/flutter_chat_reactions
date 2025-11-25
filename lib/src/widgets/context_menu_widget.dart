@@ -51,35 +51,36 @@ class ReactionsDialogWidget extends StatelessWidget {
     return BackdropFilter(
       filter: ImageFilter.blur(
           sigmaX: config.dialogBlurSigma, sigmaY: config.dialogBlurSigma),
-      child: Center(
-        child: Padding(
-          padding: config.dialogPadding,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ReactionsRow(
-                controller: controller,
-                messageId: messageId,
-                reactions: config.availableReactions,
-                alignment: alignment,
-                onReactionTap: (reaction, _) =>
-                    _handleReactionTap(context, reaction),
+      child: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: config.dialogPadding,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ReactionsRow(
+                    controller: controller,
+                    messageId: messageId,
+                    reactions: config.availableReactions,
+                    alignment: alignment,
+                    onReactionTap: (reaction, _) =>
+                        _handleReactionTap(context, reaction),
+                  ),
+                  const SizedBox(height: 10),
+                  messageWidget,
+                  if (config.showContextMenu) ...[
+                    ContextMenuWidget(
+                      menuItems: config.menuItems,
+                      alignment: alignment,
+                      onMenuItemTap: (item, _) =>
+                          _handleMenuItemTap(context, item),
+                      customMenuItemBuilder: config.customMenuItemBuilder,
+                    ),
+                  ],
+                ],
               ),
-              const SizedBox(height: 10),
-              MessageBubble(
-                id: messageId,
-                messageWidget: messageWidget,
-                alignment: alignment,
-              ),
-              if (config.showContextMenu) ...[
-                ContextMenuWidget(
-                  menuItems: config.menuItems,
-                  alignment: alignment,
-                  onMenuItemTap: (item, _) => _handleMenuItemTap(context, item),
-                  customMenuItemBuilder: config.customMenuItemBuilder,
-                ),
-              ],
-            ],
+            ),
           ),
         ),
       ),
@@ -115,14 +116,19 @@ class ContextMenuWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width / 5;
+    double width = MediaQuery
+        .of(context)
+        .size
+        .width / 5;
     return Container(
       height: menuItems.length > 4 ? (width * 2) : width,
       width: menuItems.length > 4
           ? (width * 4)
           : (width * menuItems.length.toDouble()),
       decoration: BoxDecoration(
-        color: Theme.of(context).brightness == Brightness.dark
+        color: Theme
+            .of(context)
+            .brightness == Brightness.dark
             ? const Color(0xFF2E2E2E)
             : const Color(0xFFFFFFFF),
         borderRadius: BorderRadius.circular(15),
@@ -147,9 +153,9 @@ class ContextMenuWidget extends StatelessWidget {
                   Text(
                     item.label,
                     style: TextStyle(
-                        color: Colors.black,
-                        fontSize: item.fontSize ?? 14,
-                        fontWeight: FontWeight.w500,),
+                      color: Colors.black,
+                      fontSize: item.fontSize ?? 14,
+                      fontWeight: FontWeight.w500,),
                     textAlign: TextAlign.center,
                   ),
                 ],
