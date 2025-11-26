@@ -11,6 +11,7 @@ class ReactionsRow extends StatefulWidget {
     required this.onReactionTap,
     required this.controller,
     required this.messageId,
+    this.maxReactionsToShow = 7,
   });
 
   final List<String> reactions;
@@ -18,6 +19,7 @@ class ReactionsRow extends StatefulWidget {
   final Function(String, int) onReactionTap;
   final ReactionsController controller;
   final String messageId;
+  final int maxReactionsToShow;
 
   @override
   State<ReactionsRow> createState() => _ReactionsRowState();
@@ -25,19 +27,21 @@ class ReactionsRow extends StatefulWidget {
 
 class _ReactionsRowState extends State<ReactionsRow> {
   bool _showAll = false;
-  static const int _maxInitialItems = 8;
 
   @override
   Widget build(BuildContext context) {
-    final hasMoreItems = widget.reactions.length > _maxInitialItems;
+    final hasMoreItems = widget.reactions.length > widget.maxReactionsToShow;
     final itemsToShow = _showAll
         ? widget.reactions
-        : widget.reactions.take(_maxInitialItems).toList();
+        : widget.reactions.take(widget.maxReactionsToShow).toList();
 
     return Container(
       padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: Theme
+            .of(context)
+            .colorScheme
+            .surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -53,25 +57,27 @@ class _ReactionsRowState extends State<ReactionsRow> {
   }
 
   Widget _buildRow(List<String> reactions, bool hasMoreItems) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (var i = 0; i < reactions.length; i++)
-          ReactionButton(
-            reaction: reactions[i],
-            index: i,
-            onTap: widget.onReactionTap,
-            isOwnReaction: _isOwnReaction(reactions[i]),
-          ),
-        if (hasMoreItems)
-          IconButton(
-              onPressed: () {
-                setState(() {
-                  _showAll = true;
-                });
-              },
-              icon: const Icon(Icons.add)),
-      ],
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          for (var i = 0; i < reactions.length; i++)
+            ReactionButton(
+              reaction: reactions[i],
+              index: i,
+              onTap: widget.onReactionTap,
+              isOwnReaction: _isOwnReaction(reactions[i]),
+            ),
+          if (hasMoreItems)
+            IconButton(
+                onPressed: () {
+                  setState(() {
+                    _showAll = true;
+                  });
+                },
+                icon: const Icon(Icons.add)),
+        ],
+      ),
     );
   }
 

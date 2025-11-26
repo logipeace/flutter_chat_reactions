@@ -64,6 +64,7 @@ class ReactionsDialogWidget extends StatelessWidget {
                     messageId: messageId,
                     reactions: config.availableReactions,
                     alignment: alignment,
+                    maxReactionsToShow: config.maxReactionsToShow,
                     onReactionTap: (reaction, _) =>
                         _handleReactionTap(context, reaction),
                   ),
